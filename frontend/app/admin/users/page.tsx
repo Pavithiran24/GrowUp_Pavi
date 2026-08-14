@@ -89,7 +89,11 @@ export default function AdminUsersPage() {
     }
   };
 
-  if (currentUser?.role !== 'ADMIN') {
+  if (!currentUser) {
+    return null;
+  }
+
+  if (currentUser.role !== 'ADMIN') {
     return (
       <div className="glass-card p-12 text-center max-w-md mx-auto space-y-4 my-12">
         <ShieldAlert className="w-12 h-12 text-rose-500 mx-auto" />

@@ -27,8 +27,10 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-      <div className="bg-surface-200 border border-gray-800 rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md overflow-y-auto animate-fade-in">
+      <div className="relative bg-surface-200 border border-gray-800/80 rounded-2xl max-w-md w-full p-6 shadow-[0_25px_70px_rgba(0,0,0,0.85)] space-y-4 my-auto overflow-hidden">
+        {/* Top Accent Line */}
+        <div className={`absolute top-0 left-0 right-0 h-1 ${isDanger ? 'bg-rose-500' : 'bg-blue-500'}`} />
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className={`p-2.5 rounded-xl ${isDanger ? 'bg-rose-500/10 text-rose-400' : 'bg-blue-500/10 text-blue-400'}`}>

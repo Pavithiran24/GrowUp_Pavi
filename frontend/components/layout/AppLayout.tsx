@@ -14,6 +14,12 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
 
   const isAuthPage = pathname === '/login' || pathname === '/register';
 
+  React.useEffect(() => {
+    if (!loading && !user && !isAuthPage) {
+      router.replace('/login');
+    }
+  }, [loading, user, isAuthPage, router]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -30,10 +36,14 @@ export const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children })
   }
 
   if (!user) {
-    if (typeof window !== 'undefined') {
-      router.push('/login');
-    }
-    return null;
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+          <p className="text-sm font-medium text-gray-400">Redirecting to login...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

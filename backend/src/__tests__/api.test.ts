@@ -529,4 +529,66 @@ describe('TaskFlow Entire Project Automated End-to-End Test Suite', () => {
       expect(res.status).toBe(200);
     });
   });
+
+  /* -------------------------------------------------------------------------- */
+  /* 8. DEDICATED BACKEND BUSINESS LOGIC SUITE                                  */
+  /* -------------------------------------------------------------------------- */
+  describe('8. Backend Business Logic & Security Rule Automation', () => {
+    let logicProjectId: string;
+
+    it('Backend Logic: Email normalization logic handles uppercase email input', async () => {
+      const res = await request(app)
+        .post('/api/auth/login')
+        .send({
+          email: 'JOHN@TASKFLOW.COM', // Uppercase input test
+          password: 'UserPass123!',
+        });
+
+      expect(res.status).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data).toHaveProperty('accessToken');
+    });
+
+    it('Backend Logic: Setup workspace for owner removal safeguard test', async () => {
+      const res = await request(app)
+        .post('/api/projects')
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({
+          name: 'Backend Owner Safeguard Workspace',
+        });
+
+      expect(res.status).toBe(201);
+      logicProjectId = res.body.data.id;
+    });
+
+    it('Backend Logic: Reject removing Project Owner from workspace (400 Bad Request)', async () => {
+      const res = await request(app)
+        .delete(`/api/projects/${logicProjectId}/members/${normalUserId}`) // normalUserId is the project owner
+        .set('Authorization', `Bearer ${userToken}`);
+
+      expect(res.status).toBe(400);
+      expect(res.body.message).toContain('Cannot remove the owner');
+    });
+
+    it('Backend Logic: Reject assigning task to non-member user (400 Bad Request)', async () => {
+      const res = await request(app)
+        .post(`/api/projects/${logicProjectId}/tasks`)
+        .set('Authorization', `Bearer ${userToken}`)
+        .send({
+          title: 'Unassigned Non-Member Task',
+          assigneeId: secondaryUserId, // secondaryUser is NOT a member
+        });
+
+      expect(res.status).toBe(400);
+      expect(res.body.message).toContain('must be an existing member');
+    });
+
+    it('Backend Logic: Clean up logic test project workspace', async () => {
+      const res = await request(app)
+        .delete(`/api/projects/${logicProjectId}`)
+        .set('Authorization', `Bearer ${userToken}`);
+
+      expect(res.status).toBe(200);
+    });
+  });
 });

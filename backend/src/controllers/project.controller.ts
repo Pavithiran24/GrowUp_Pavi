@@ -66,4 +66,13 @@ export class ProjectController {
       next(error);
     }
   }
+
+  static async getMembers(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+    try {
+      const members = await ProjectService.getMembers(req.params.id, req.user!);
+      return sendSuccess(res, 200, 'Project members retrieved successfully', members);
+    } catch (error) {
+      next(error);
+    }
+  }
 }

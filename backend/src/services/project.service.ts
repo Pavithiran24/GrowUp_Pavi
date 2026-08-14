@@ -139,4 +139,20 @@ export class ProjectService {
       targetUserId,
     });
   }
+
+  static async getMembers(projectId: string, user: UserPayload) {
+    const project = await ProjectRepository.findById(projectId);
+    if (!project) {
+      throw new AppError('Project not found', 404);
+    }
+
+    const isAdmin = user.role === 'ADMIN';
+    const isMember = project.members.some((m) => m.userId === user.id);
+
+    if (!isAdmin && !isMember) {
+      throw new AppError('Access denied: You are not a member of this project', 403);
+    }
+
+    return project.members;
+  }
 }

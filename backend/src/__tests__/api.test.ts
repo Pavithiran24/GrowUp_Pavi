@@ -280,6 +280,16 @@ describe('TaskFlow Entire Project Automated End-to-End Test Suite', () => {
       expect(res.body.success).toBe(true);
     });
 
+    it('GET /api/projects/:id/members — Fetch project members list', async () => {
+      const res = await request(app)
+        .get(`/api/projects/${testProjectId}/members`)
+        .set('Authorization', `Bearer ${userToken}`);
+
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.data)).toBe(true);
+      expect(res.body.data.length).toBeGreaterThan(0);
+    });
+
     it('POST /api/projects/:id/members — Reject duplicate project member (409 Conflict)', async () => {
       const res = await request(app)
         .post(`/api/projects/${testProjectId}/members`)
